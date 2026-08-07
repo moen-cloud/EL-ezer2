@@ -13,7 +13,6 @@ export const pageHeroes = {
   services: cld('services', { w: 1920, h: 700, crop: 'fit' }),
   industries: cld('industries', { w: 1920, h: 700 }),
   portfolio: cld('portfolio', { w: 1920, h: 700 }),
-  clientResults: cld('client-results', { w: 1920, h: 700 }),
   pricing: cld('pricing', { w: 1920, h: 700 }),
   blog: cld('blog', { w: 1920, h: 700 }),
   faq: cld('faq', { w: 1920, h: 700 }),

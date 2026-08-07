@@ -14,9 +14,6 @@ const Industries = lazy(() => import('./pages/Industries'))
 const IndustryDetail = lazy(() => import('./pages/IndustryDetail'))
 const Portfolio = lazy(() => import('./pages/Portfolio'))
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'))
-const CaseStudies = lazy(() => import('./pages/CaseStudies'))
-const CaseStudyDetail = lazy(() => import('./pages/CaseStudyDetail'))
-const ClientResults = lazy(() => import('./pages/ClientResults'))
 const Pricing = lazy(() => import('./pages/Pricing'))
 const Blog = lazy(() => import('./pages/Blog'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
@@ -44,9 +41,6 @@ export default function App() {
               <Route path="/industries/:slug" element={<IndustryDetail />} />
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/portfolio/:slug" element={<ProjectDetail />} />
-              <Route path="/case-studies" element={<CaseStudies />} />
-              <Route path="/case-studies/:slug" element={<CaseStudyDetail />} />
-              <Route path="/client-results" element={<ClientResults />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />

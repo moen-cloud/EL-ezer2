@@ -15,7 +15,6 @@ const companyLinks = [
 
 const resourceLinks = [
   { label: 'Portfolio', to: '/portfolio' },
-  { label: 'Case Studies', to: '/case-studies' },
   { label: 'Blog', to: '/blog' },
   { label: 'FAQs', to: '/faq' },
 ]

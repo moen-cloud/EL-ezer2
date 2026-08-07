@@ -1,10 +1,8 @@
 import { useParams, Navigate, Link } from 'react-router-dom'
 import { getIndustryBySlug } from '../data/industries'
-import { caseStudies } from '../data/caseStudies'
 import { testimonials } from '../data/testimonials'
 import Seo from '../components/Seo'
 import PageHeader from '../components/ui/PageHeader'
-import CaseStudyCard from '../components/cards/CaseStudyCard'
 import TestimonialSlider from '../components/cards/TestimonialSlider'
 import SectionHeading from '../components/ui/SectionHeading'
 
@@ -13,8 +11,6 @@ export default function IndustryDetail() {
   const industry = getIndustryBySlug(slug)
 
   if (!industry) return <Navigate to="/404" replace />
-
-  const relatedCaseStudies = caseStudies.filter((cs) => cs.industry === industry.name)
 
   return (
     <>
@@ -35,20 +31,6 @@ export default function IndustryDetail() {
             className="aspect-[21/9] w-full rounded-2xl object-cover"
             loading="lazy"
           />
-
-          {relatedCaseStudies.length > 0 && (
-            <div className="mt-16">
-              <SectionHeading
-                eyebrow="Proven Results"
-                title={`How we've helped ${industry.name.toLowerCase()} businesses grow`}
-              />
-              <div className="mt-8 grid gap-6 lg:grid-cols-3">
-                {relatedCaseStudies.map((cs, i) => (
-                  <CaseStudyCard key={cs.slug} caseStudy={cs} index={i} />
-                ))}
-              </div>
-            </div>
-          )}
 
           <div className="mt-16">
             <SectionHeading eyebrow="What Clients Say" title="Trusted across the industry" align="center" />

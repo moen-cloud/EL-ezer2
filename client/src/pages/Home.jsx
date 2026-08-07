@@ -4,8 +4,6 @@ import TrustedBy from '../components/home/TrustedBy'
 import ServicesOverview from '../components/home/ServicesOverview'
 import WhyChooseUs from '../components/home/WhyChooseUs'
 import FeaturedPortfolio from '../components/home/FeaturedPortfolio'
-import ClientResultsSection from '../components/home/ClientResultsSection'
-import FeaturedCaseStudies from '../components/home/FeaturedCaseStudies'
 import TestimonialsSection from '../components/home/TestimonialsSection'
 import BlogPreview from '../components/home/BlogPreview'
 import CTASection from '../components/home/CTASection'
@@ -22,8 +20,6 @@ export default function Home() {
       <ServicesOverview />
       <WhyChooseUs />
       <FeaturedPortfolio />
-      <ClientResultsSection />
-      <FeaturedCaseStudies />
       <TestimonialsSection />
       <BlogPreview />
       <CTASection />
