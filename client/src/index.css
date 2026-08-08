@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add this near the top of src/index.css, after your @tailwind directives.
+   This prevents ANY element on the site — a too-wide marquee, an
+   unconstrained image, a flex row, etc. — from ever stretching the page
+   wider than the actual screen. That stretching is what causes fixed-
+   position elements (like the mobile menu panel) to appear misaligned or
+   to reveal page content at the edges when you scroll/pan sideways. */
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

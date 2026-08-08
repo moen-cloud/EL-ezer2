@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { ChevronDown, X, Phone, ArrowRight } from 'lucide-react'
 import { services } from '../../data/services'
@@ -71,6 +71,7 @@ function MenuLink({ to, onClick, children, index }) {
 
 export default function MobileMenu({ isOpen, onClose }) {
   const [openSection, setOpenSection] = useState(null)
+  const panelRef = useRef(null)
 
   const toggleSection = (section) => {
     setOpenSection((current) => (current === section ? null : section))
@@ -81,6 +82,17 @@ export default function MobileMenu({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) {
       setOpenSection(null)
+
+      // Whatever was just clicked/tapped to trigger this close (a nav
+      // link, the X button, etc.) still holds keyboard focus at this
+      // point, and it lives inside this panel. On the very next render
+      // the panel gets aria-hidden="true" below — browsers block that
+      // while a focused descendant remains inside, and log a console
+      // warning. Releasing focus first avoids it.
+      if (panelRef.current?.contains(document.activeElement)) {
+        document.activeElement.blur()
+      }
+
       return
     }
 
@@ -111,6 +123,7 @@ export default function MobileMenu({ isOpen, onClose }) {
 
       {/* Panel — always mounted, slides fully off-screen when closed */}
       <div
+        ref={panelRef}
         style={{ height: '100dvh' }}
         className={`fixed inset-y-0 right-0 z-[60] flex w-full flex-col bg-ink transition-transform duration-300 ease-out lg:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
