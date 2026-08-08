@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
@@ -48,5 +50,16 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // By default Tailwind's `hover:` compiles to plain CSS `:hover`, which on
+    // touchscreens causes the well-known "first tap only hovers, second tap
+    // actually clicks" problem — exactly what stops single-tap navigation
+    // from working anywhere a link has hover: styling (which is everywhere
+    // in the nav). This redefines `hover:` to only apply on devices that
+    // genuinely support hovering (mouse/trackpad), so touch always gets a
+    // normal, single-tap click.
+    plugin(({ addVariant }) => {
+      addVariant('hover', '@media (hover: hover) and (pointer: fine) { &:hover }')
+    }),
+  ],
 }

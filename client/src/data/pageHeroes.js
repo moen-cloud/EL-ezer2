@@ -1,10 +1,25 @@
-// TEMPORARY: banner images use a placeholder generator until real hero
-// photos are uploaded to Cloudinary at el-ezer/heroes/<key>.
+// Every hero background image for a top-level/listing page lives here, in
+// one place. Detail pages (a single service, industry, portfolio project,
+// or blog post) do NOT use this file — they reuse that item's own `image`
+// field from its own data file instead (e.g. services.js), since that is
+// more specific to the page than a generic banner would be.
 //
-// To go live with real images: upload each photo to Cloudinary inside
-// el-ezer/heroes/, name it to match the key below (e.g. "portfolio",
-// "pricing"), then swap that entry back to:
-//   cld('el-ezer/heroes/<key>', { w: 1920, h: 700 })
+// HOW TO ADD YOUR REAL PHOTOS (replaces the placeholders below):
+// 1. Log into Cloudinary -> Media Library
+// 2. Create a folder called "el-ezer", and inside it, a folder called "heroes"
+// 3. Upload a photo for each key below (services, industries, portfolio...)
+// 4. IMPORTANT: when uploading, set the "Public ID" field to match the key
+//    exactly (e.g. upload your services banner with Public ID "services").
+//    If you skip this, Cloudinary invents a random name instead (this is
+//    what happened with the current "about" image below) and the code
+//    won't find it automatically — you'd have to hardcode that random URL
+//    instead, which is harder to maintain.
+// 5. Once uploaded with the right name, swap that entry below from
+//    placeholderHero(...) to: cld('el-ezer/heroes/<key>', { w: 1920, h: 700 })
+//
+// Nothing breaks if an image is missing — the placeholder just keeps
+// showing until you replace it, so you can launch before every photo is in.
+
 import { cld } from '../lib/cloudinary'
 
 const placeholderHero = (label) =>
@@ -18,7 +33,9 @@ export const pageHeroes = {
   pricing: placeholderHero('Pricing'),
   blog: placeholderHero('Blog'),
   faq: placeholderHero('FAQ'),
-  about: 'https://res.cloudinary.com/debhmwj73/image/upload/v1786062315/wor_ogannx.jpg',
+  // This one is already real — uploaded to Cloudinary, just under an
+  // auto-generated name since no custom Public ID was set at upload time.
+  about: cld('wor_ogannx', { w: 1920, h: 700 }),
   ourStory: placeholderHero('Our Story'),
   ourTeam: placeholderHero('Our Team'),
   contact: placeholderHero('Contact'),
