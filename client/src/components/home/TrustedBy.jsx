@@ -1,9 +1,22 @@
+// TEMPORARY: logo images use a placeholder service until real logos are
+// uploaded to Cloudinary at el-ezer/logos/<slug>.
+// Once uploaded, swap placeholderLogo(...) back to:
+//   cld(`el-ezer/logos/${logo}`, { w: 160, h: 60 })
 import { cld } from '../../lib/cloudinary'
 
 const logos = [
   'coastal-realty', 'brightpath-clinics', 'sterling-associates', 'ironclad-builders',
   'lumen-goods', 'westbridge-academy', 'harbor-finance', 'novus-tech',
 ]
+
+const logoLabel = (slug) =>
+  slug
+    .split('-')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(' ')
+
+const placeholderLogo = (slug) =>
+  `https://placehold.co/160x60/f5f5f0/1B4332?text=${encodeURIComponent(logoLabel(slug))}&font=roboto`
 
 export default function TrustedBy() {
   const doubled = [...logos, ...logos]
@@ -22,7 +35,7 @@ export default function TrustedBy() {
           {doubled.map((logo, i) => (
             <img
               key={`${logo}-${i}`}
-              src={cld(`el-ezer/logos/${logo}`, { w: 160, h: 60 })}
+              src={placeholderLogo(logo)}
               alt=""
               className="h-8 w-auto flex-shrink-0 opacity-40 grayscale transition-opacity hover:opacity-70 sm:h-9"
               loading="lazy"

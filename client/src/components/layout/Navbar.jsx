@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Search, ChevronDown, ArrowRight } from 'lucide-react'
+import { Menu, X, Search, ChevronDown, ArrowRight, Phone } from 'lucide-react'
 import { services } from '../../data/services'
 import { industries } from '../../data/industries'
 import { siteConfig } from '../../data/site'
@@ -47,6 +47,285 @@ function NavItem({ to, children }) {
   )
 }
 
+// ---- Mobile menu (full-screen panel with accordion dropdowns) ----
+
+const panelVariants = {
+  hidden: { x: '100%' },
+  visible: { x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+  exit: { x: '100%', transition: { duration: 0.3, ease: 'easeIn' } },
+}
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+}
+
+const listVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, x: 24 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+}
+
+function MobileAccordionRow({ label, isOpen, onToggle, children }) {
+  return (
+    <motion.div variants={itemVariants} className="border-b border-white/10">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-full items-center justify-between py-4 font-heading text-base font-medium text-gold"
+      >
+        {label}
+        <ChevronDown
+          className={`h-5 w-5 transition-transform duration-300 ${
+            isOpen ? 'rotate-180 text-emerald' : 'text-gold/60'
+          }`}
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-col gap-1 pb-4">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+function MobileMenuPanel({ isOpen, onClose }) {
+  const [openSection, setOpenSection] = useState(null)
+
+  const toggleSection = (section) => {
+    setOpenSection((current) => (current === section ? null : section))
+  }
+
+  useEffect(() => {
+    if (!isOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isOpen, onClose])
+
+  useEffect(() => {
+    if (!isOpen) setOpenSection(null)
+  }, [isOpen])
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={backdropVariants}
+            className="fixed inset-0 z-[59] bg-black/60 lg:hidden"
+            onClick={onClose}
+          />
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={panelVariants}
+            style={{ position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, height: '100dvh' }}
+            className="z-[60] flex flex-col bg-ink lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+          >
+            <div className="flex shrink-0 items-center justify-between px-6 py-5">
+              <Link to="/" onClick={onClose} className="flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald font-heading text-lg font-bold text-white">
+                  E
+                </span>
+                <span className="font-heading text-lg font-bold text-white">EL EZER</span>
+              </Link>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close menu"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <motion.nav
+              variants={listVariants}
+              initial="hidden"
+              animate="visible"
+              className="min-h-0 flex-1 overflow-y-auto px-6"
+            >
+              <motion.div variants={itemVariants} className="border-b border-white/10">
+                <NavLink
+                  to="/"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block py-4 font-heading text-base font-medium ${isActive ? 'text-emerald' : 'text-gold'}`
+                  }
+                >
+                  Home
+                </NavLink>
+              </motion.div>
+
+              <MobileAccordionRow
+                label="Services"
+                isOpen={openSection === 'services'}
+                onToggle={() => toggleSection('services')}
+              >
+                <div className="grid grid-cols-2 gap-1">
+                  {services.map((service) => (
+                    <Link
+                      key={service.slug}
+                      to={`/services/${service.slug}`}
+                      onClick={onClose}
+                      className="rounded-lg px-2 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white"
+                    >
+                      {service.shortName}
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  to="/services"
+                  onClick={onClose}
+                  className="mt-2 flex items-center gap-1 px-2 py-2 text-sm font-semibold text-emerald"
+                >
+                  View all services
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </MobileAccordionRow>
+
+              <MobileAccordionRow
+                label="Industries"
+                isOpen={openSection === 'industries'}
+                onToggle={() => toggleSection('industries')}
+              >
+                <div className="grid grid-cols-2 gap-1">
+                  {industries.map((industry) => (
+                    <Link
+                      key={industry.slug}
+                      to={`/industries/${industry.slug}`}
+                      onClick={onClose}
+                      className="rounded-lg px-2 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white"
+                    >
+                      {industry.name}
+                    </Link>
+                  ))}
+                </div>
+              </MobileAccordionRow>
+
+              <motion.div variants={itemVariants} className="border-b border-white/10">
+                <NavLink
+                  to="/portfolio"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block py-4 font-heading text-base font-medium ${isActive ? 'text-emerald' : 'text-gold'}`
+                  }
+                >
+                  Portfolio
+                </NavLink>
+              </motion.div>
+
+              <motion.div variants={itemVariants} className="border-b border-white/10">
+                <NavLink
+                  to="/pricing"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block py-4 font-heading text-base font-medium ${isActive ? 'text-emerald' : 'text-gold'}`
+                  }
+                >
+                  Pricing
+                </NavLink>
+              </motion.div>
+
+              <motion.div variants={itemVariants} className="border-b border-white/10">
+                <NavLink
+                  to="/blog"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block py-4 font-heading text-base font-medium ${isActive ? 'text-emerald' : 'text-gold'}`
+                  }
+                >
+                  Blog
+                </NavLink>
+              </motion.div>
+
+              <MobileAccordionRow
+                label="About"
+                isOpen={openSection === 'about'}
+                onToggle={() => toggleSection('about')}
+              >
+                {aboutLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={onClose}
+                    className="rounded-lg px-2 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </MobileAccordionRow>
+
+              <motion.div variants={itemVariants} className="border-b border-white/10">
+                <NavLink
+                  to="/contact"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block py-4 font-heading text-base font-medium ${isActive ? 'text-emerald' : 'text-gold'}`
+                  }
+                >
+                  Contact
+                </NavLink>
+              </motion.div>
+            </motion.nav>
+
+            <motion.div
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex shrink-0 flex-col gap-2 px-6 py-5"
+            >
+              <Link to="/contact" onClick={onClose} className="btn-primary w-full">
+                Book a Free Consultation
+              </Link>
+              <a
+                href={siteConfig.phoneHref}
+                onClick={onClose}
+                className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/15 px-5 py-2.5 font-heading text-sm font-semibold text-white"
+              >
+                <Phone className="h-4 w-4" />
+                Call {siteConfig.phone}
+              </a>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+
+// ---- Navbar ----
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
@@ -64,7 +343,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close menus whenever the route changes
   useEffect(() => {
     setMobileOpen(false)
     setServicesOpen(false)
@@ -72,9 +350,6 @@ export default function Navbar() {
     setAboutOpen(false)
   }, [location.pathname])
 
-  // Also close immediately on click, rather than waiting on the route-change
-  // effect above — the dropdown panels are absolutely positioned, so relying
-  // on hover state alone to close them after a click can lag or stick open.
   const closeMenus = () => {
     setServicesOpen(false)
     setIndustriesOpen(false)
@@ -87,7 +362,6 @@ export default function Navbar() {
         scrolled ? 'shadow-card' : ''
       }`}
     >
-      {/* Scroll progress indicator */}
       <div className="h-0.5 w-full bg-emerald-dark">
         <div
           className="h-full bg-emerald transition-[width] duration-150"
@@ -112,7 +386,6 @@ export default function Navbar() {
         <nav className="hidden items-center gap-6 lg:flex">
           <NavItem to="/">Home</NavItem>
 
-          {/* Services mega menu */}
           <div
             className="relative"
             onMouseEnter={() => setServicesOpen(true)}
@@ -166,7 +439,6 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Industries dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setIndustriesOpen(true)}
@@ -208,7 +480,6 @@ export default function Navbar() {
           <NavItem to="/portfolio">Portfolio</NavItem>
           <NavItem to="/pricing">Pricing</NavItem>
 
-          {/* About dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setAboutOpen(true)}
@@ -273,66 +544,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden border-t border-ink/10 bg-white lg:hidden"
-          >
-            <div className="container-page flex flex-col gap-1 py-4">
-              {primaryLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `rounded-xl px-3 py-3 font-heading text-sm font-medium ${
-                      isActive ? 'bg-emerald-dark text-white' : 'text-gold'
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-
-              <p className="mt-2 px-3 text-xs font-semibold uppercase tracking-wide text-ink/40">Services</p>
-              <div className="grid grid-cols-2 gap-1 px-1">
-                {services.slice(0, 6).map((service) => (
-                  <Link
-                    key={service.slug}
-                    to={`/services/${service.slug}`}
-                    className="rounded-xl px-2 py-2 text-sm text-gold"
-                  >
-                    {service.shortName}
-                  </Link>
-                ))}
-              </div>
-              <Link to="/services" className="px-3 py-2 text-sm font-semibold text-emerald-dark">
-                View all services →
-              </Link>
-
-              <p className="mt-2 px-3 text-xs font-semibold uppercase tracking-wide text-ink/40">About</p>
-              {aboutLinks.map((link) => (
-                <Link key={link.to} to={link.to} className="rounded-xl px-3 py-2 text-sm text-gold">
-                  {link.label}
-                </Link>
-              ))}
-
-              <div className="mt-4 flex flex-col gap-2 border-t border-ink/10 pt-4">
-                <Link to="/contact" className="btn-primary w-full">
-                  Book a Free Consultation
-                </Link>
-                <a href={siteConfig.phoneHref} className="btn-ghost w-full">
-                  Call {siteConfig.phone}
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MobileMenuPanel isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>

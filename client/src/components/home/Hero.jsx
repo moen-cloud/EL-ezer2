@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
-import { cld, cldVideo } from '../../lib/cloudinary'
 import { textRevealDelay } from '../../lib/motion'
 
 // Set to true once you've uploaded a video to Cloudinary at the path below.
@@ -9,7 +8,14 @@ import { textRevealDelay } from '../../lib/motion'
 // browsers that block autoplay simply keep showing it.
 const USE_VIDEO = true
 
-const HERO_IMAGE = cld('el-ezer/hero/hero-main', { w: 1920, h: 1080 })
+// hero-main is a VIDEO asset in Cloudinary (resource_type: video), not an
+// image, so there's no separate image with this public ID. Instead of
+// uploading a duplicate poster image, we ask Cloudinary to extract a still
+// frame directly from the video: so_0 grabs the frame at 0 seconds, and
+// f_jpg tells Cloudinary to deliver it as a still JPG even though the
+// source is a video.
+const HERO_IMAGE =
+  'https://res.cloudinary.com/debhmwj73/video/upload/so_0,w_1920,h_1080,c_fill,q_auto,f_jpg/v1785800740/hero-main.jpg'
 const HERO_VIDEO = 'https://res.cloudinary.com/debhmwj73/video/upload/v1785800740/hero-main.mp4'
 
 export default function Hero() {

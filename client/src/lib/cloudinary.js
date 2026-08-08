@@ -1,7 +1,33 @@
 // Cloudinary URL builder for optimized image and video delivery
-// Replace 'your-cloud-name' with your actual Cloudinary cloud name
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD || 'your-cloud-name'
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'debhmwj73'
+
+// Cloudinary transformations belong in the URL path as comma-separated
+// key_value pairs (e.g. f_auto,q_auto,w_500) — NOT as a query string.
+function buildTransformString(options) {
+  const transformations = []
+
+  transformations.push(`f_${options.f || 'auto'}`)
+  transformations.push(`q_${options.q || 'auto'}`)
+
+  Object.entries(options).forEach(([key, value]) => {
+    if (value !== undefined && key !== 'f' && key !== 'q') {
+      transformations.push(`${key}_${value}`)
+    }
+  })
+
+  return transformations.join(',')
+}
+
+// Folder names in Cloudinary can contain spaces (e.g. "case studies").
+// Encode each path segment individually so spaces and other special
+// characters don't break the URL, while keeping the "/" separators intact.
+function encodePublicId(publicId) {
+  return publicId
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')
+}
 
 /**
  * Build a Cloudinary image URL with optional transformations
@@ -10,22 +36,8 @@ const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD || 'your-cloud-name'
  * @returns {string} Optimized Cloudinary image URL
  */
 export function cld(publicId, options = {}) {
-  const params = new URLSearchParams()
-  
-  // Set sensible defaults for web optimization
-  params.set('f', options.f || 'auto') // Auto format (WebP, AVIF, etc.)
-  params.set('q', options.q || 'auto') // Auto quality
-  
-  // Add custom options
-  Object.entries(options).forEach(([key, value]) => {
-    if (value !== undefined && key !== 'f' && key !== 'q') {
-      params.set(key, value)
-    }
-  })
-  
-  const queryString = params.toString()
-  const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${queryString}/${publicId}`
-  return url
+  const transformString = buildTransformString(options)
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformString}/${encodePublicId(publicId)}`
 }
 
 /**
@@ -35,20 +47,6 @@ export function cld(publicId, options = {}) {
  * @returns {string} Optimized Cloudinary video URL
  */
 export function cldVideo(publicId, options = {}) {
-  const params = new URLSearchParams()
-  
-  // Set sensible defaults for web video
-  params.set('f', options.f || 'auto')
-  params.set('q', options.q || 'auto')
-  
-  // Add custom options
-  Object.entries(options).forEach(([key, value]) => {
-    if (value !== undefined && key !== 'f' && key !== 'q') {
-      params.set(key, value)
-    }
-  })
-  
-  const queryString = params.toString()
-  const url = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/${queryString}/${publicId}.mp4`
-  return url
+  const transformString = buildTransformString(options)
+  return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/${transformString}/${encodePublicId(publicId)}.mp4`
 }
