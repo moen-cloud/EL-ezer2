@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react'
+import { FaWhatsapp } from 'react-icons/fa'
 import { siteConfig } from '../../data/site'
 
 export default function WhatsAppButton() {
@@ -14,7 +14,7 @@ export default function WhatsAppButton() {
       aria-label="Chat with us on WhatsApp"
       className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lift transition-transform hover:scale-105 sm:bottom-6"
     >
-      <MessageCircle className="h-7 w-7" fill="white" strokeWidth={0} />
+      <FaWhatsapp className="h-8 w-8" />
     </a>
   )
 }
