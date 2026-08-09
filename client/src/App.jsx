@@ -22,6 +22,7 @@ const About = lazy(() => import('./pages/About'))
 const OurStory = lazy(() => import('./pages/OurStory'))
 const OurTeam = lazy(() => import('./pages/OurTeam'))
 const Contact = lazy(() => import('./pages/Contact'))
+const Menu = lazy(() => import('./pages/Menu'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const TermsOfService = lazy(() => import('./pages/TermsOfService'))
 const CookiePolicy = lazy(() => import('./pages/CookiePolicy'))
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="/about/story" element={<OurStory />} />
               <Route path="/about/team" element={<OurTeam />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/menu" element={<Menu />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />

@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Search, ChevronDown, ArrowRight } from 'lucide-react'
+import { Menu, Search, ChevronDown, ArrowRight } from 'lucide-react'
 import { services } from '../../data/services'
 import { industries } from '../../data/industries'
 import { useScrollProgress } from '../../hooks/useScrollProgress'
 import SearchOverlay from './SearchOverlay'
-import MobileMenu from './MobileMenu'
 
 const aboutLinks = [
   { label: 'About Us', to: '/about', description: 'Our mission, vision, and values' },
@@ -40,7 +39,6 @@ function NavItem({ to, children }) {
 }
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [industriesOpen, setIndustriesOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -56,9 +54,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close every menu whenever the route changes
+  // Close every desktop dropdown whenever the route changes. There's no
+  // mobileOpen state to reset anymore — /menu is a real route now, so
+  // navigating away from it closes it the same way navigating away from
+  // any other page does.
   useEffect(() => {
-    setMobileOpen(false)
     setServicesOpen(false)
     setIndustriesOpen(false)
     setAboutOpen(false)
@@ -250,19 +250,18 @@ export default function Navbar() {
             Book a Free Consultation
           </Link>
 
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileOpen}
+          {/* /menu is a real page now — this is a plain link, not a state
+              toggle. No fixed positioning, no z-index, no portal, nothing
+              that can misbehave the way the overlay version did. */}
+          <Link
+            to="/menu"
+            aria-label="Open menu"
             className="flex h-10 w-10 items-center justify-center rounded-full text-ink lg:hidden"
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+            <Menu className="h-6 w-6" />
+          </Link>
         </div>
       </div>
-
-      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
